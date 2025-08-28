@@ -1,3 +1,4 @@
 /build
 /.gradle
 /simgui*.json
+/src/main/java/frc/robot/BuildConstants.java
