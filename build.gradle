@@ -231,7 +231,7 @@ spotless {
             exclude "**/build/**", "**/build-*/**", "**/.devenv/**", "**/BuildConstants.java"
         }
         toggleOffOn()
-        palantirJavaFormat().formatJavadoc(true)
+        googleJavaFormat().formatJavadoc(true)
         removeUnusedImports()
         leadingTabsToSpaces(4)
         trimTrailingWhitespace()
