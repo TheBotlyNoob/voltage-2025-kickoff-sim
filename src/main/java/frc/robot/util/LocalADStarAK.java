@@ -19,6 +19,7 @@ import org.littletonrobotics.junction.inputs.LoggableInputs;
 // https://gist.github.com/mjansen4857/a8024b55eb427184dbd10ae8923bd57d
 
 public class LocalADStarAK implements Pathfinder {
+
   private final ADStarIO io = new ADStarIO();
 
   /**
@@ -75,8 +76,8 @@ public class LocalADStarAK implements Pathfinder {
   /**
    * Set the goal position to pathfind to
    *
-   * @param goalPosition Goal position on the field. f this is within an obstacle it will be moved
-   *     to the nearest non-obstacle node.
+   * @param goalPosition Goal position on the field. f this is within an obstacle it will be
+   *     moved to the nearest non-obstacle node.
    */
   @Override
   public void setGoalPosition(Translation2d goalPosition) {
@@ -88,10 +89,10 @@ public class LocalADStarAK implements Pathfinder {
   /**
    * Set the dynamic obstacles that should be avoided while pathfinding.
    *
-   * @param obs A List of Translation2d pairs representing obstacles. Each Translation2d represents
-   *     opposite corners of a bounding box.
-   * @param currentRobotPos The current position of the robot. This is needed to change the start
-   *     position of the path to properly avoid obstacles
+   * @param obs A List of Translation2d pairs representing obstacles. Each Translation2d
+   *     represents opposite corners of a bounding box.
+   * @param currentRobotPos The current position of the robot. This is needed to change the
+   *     start position of the path to properly avoid obstacles
    */
   @Override
   public void setDynamicObstacles(
@@ -102,6 +103,7 @@ public class LocalADStarAK implements Pathfinder {
   }
 
   private static class ADStarIO implements LoggableInputs {
+
     public LocalADStar adStar = new LocalADStar();
     public boolean isNewPathAvailable = false;
     public List<PathPoint> currentPathPoints = Collections.emptyList();

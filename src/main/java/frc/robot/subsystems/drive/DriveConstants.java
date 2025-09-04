@@ -21,6 +21,7 @@ import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.math.util.Units;
 
 public class DriveConstants {
+
   public static final double maxSpeedMetersPerSec = 4.8;
   public static final double odometryFrequency = 100.0; // Hz
   public static final double trackWidth = Units.inchesToMeters(26.5);
@@ -28,10 +29,10 @@ public class DriveConstants {
   public static final double driveBaseRadius = Math.hypot(trackWidth / 2.0, wheelBase / 2.0);
   public static final Translation2d[] moduleTranslations =
       new Translation2d[] {
-        new Translation2d(trackWidth / 2.0, wheelBase / 2.0),
-        new Translation2d(trackWidth / 2.0, -wheelBase / 2.0),
-        new Translation2d(-trackWidth / 2.0, wheelBase / 2.0),
-        new Translation2d(-trackWidth / 2.0, -wheelBase / 2.0)
+          new Translation2d(trackWidth / 2.0, wheelBase / 2.0),
+          new Translation2d(trackWidth / 2.0, -wheelBase / 2.0),
+          new Translation2d(-trackWidth / 2.0, wheelBase / 2.0),
+          new Translation2d(-trackWidth / 2.0, -wheelBase / 2.0)
       };
 
   // Zeroed rotation values for each module, see setup instructions

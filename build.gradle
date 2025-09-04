@@ -231,9 +231,9 @@ spotless {
             exclude "**/build/**", "**/build-*/**", "**/.devenv/**", "**/BuildConstants.java"
         }
         toggleOffOn()
-        googleJavaFormat().formatJavadoc(true)
+        googleJavaFormat().formatJavadoc(false)
         removeUnusedImports()
-        leadingTabsToSpaces(4)
+        leadingTabsToSpaces(2)
         trimTrailingWhitespace()
         endWithNewline()
     }
@@ -245,7 +245,7 @@ spotless {
         toggleOffOn()
         ktlint()
         ktfmt()
-        leadingTabsToSpaces(4)
+        leadingTabsToSpaces(2)
         trimTrailingWhitespace()
         endWithNewline()
     }

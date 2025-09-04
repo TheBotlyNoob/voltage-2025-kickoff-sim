@@ -13,7 +13,16 @@
 
 package frc.robot.subsystems.drive;
 
-import static frc.robot.subsystems.drive.DriveConstants.*;
+import static frc.robot.subsystems.drive.DriveConstants.driveGearbox;
+import static frc.robot.subsystems.drive.DriveConstants.driveMotorReduction;
+import static frc.robot.subsystems.drive.DriveConstants.driveSimD;
+import static frc.robot.subsystems.drive.DriveConstants.driveSimKs;
+import static frc.robot.subsystems.drive.DriveConstants.driveSimKv;
+import static frc.robot.subsystems.drive.DriveConstants.driveSimP;
+import static frc.robot.subsystems.drive.DriveConstants.turnGearbox;
+import static frc.robot.subsystems.drive.DriveConstants.turnMotorReduction;
+import static frc.robot.subsystems.drive.DriveConstants.turnSimD;
+import static frc.robot.subsystems.drive.DriveConstants.turnSimP;
 
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.PIDController;
@@ -24,6 +33,7 @@ import edu.wpi.first.wpilibj.simulation.DCMotorSim;
 
 /** Physics sim implementation of module IO. */
 public class ModuleIOSim implements ModuleIO {
+
   private final DCMotorSim driveSim;
   private final DCMotorSim turnSim;
 

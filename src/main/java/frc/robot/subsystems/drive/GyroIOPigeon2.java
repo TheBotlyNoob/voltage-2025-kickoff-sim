@@ -13,7 +13,8 @@
 
 package frc.robot.subsystems.drive;
 
-import static frc.robot.subsystems.drive.DriveConstants.*;
+import static frc.robot.subsystems.drive.DriveConstants.odometryFrequency;
+import static frc.robot.subsystems.drive.DriveConstants.pigeonCanId;
 
 import com.ctre.phoenix6.BaseStatusSignal;
 import com.ctre.phoenix6.StatusCode;
@@ -28,6 +29,7 @@ import java.util.Queue;
 
 /** IO implementation for Pigeon 2. */
 public class GyroIOPigeon2 implements GyroIO {
+
   private final Pigeon2 pigeon = new Pigeon2(pigeonCanId);
   private final StatusSignal<Angle> yaw = pigeon.getYaw();
   private final Queue<Double> yawPositionQueue;

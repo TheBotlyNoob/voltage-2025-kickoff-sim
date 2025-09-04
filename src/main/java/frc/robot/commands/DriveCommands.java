@@ -38,6 +38,7 @@ import java.util.function.DoubleSupplier;
 import java.util.function.Supplier;
 
 public class DriveCommands {
+
   private static final double DEADBAND = 0.1;
   private static final double ANGLE_KP = 5.0;
   private static final double ANGLE_KD = 0.4;
@@ -152,7 +153,6 @@ public class DriveCommands {
                           : drive.getRotation()));
             },
             drive)
-
         // Reset PID controller when command starts
         .beforeStarting(() -> angleController.reset(drive.getRotation().getRadians()));
   }
@@ -291,6 +291,7 @@ public class DriveCommands {
   }
 
   private static class WheelRadiusCharacterizationState {
+
     double[] positions = new double[4];
     Rotation2d lastAngle = new Rotation2d();
     double gyroDelta = 0.0;

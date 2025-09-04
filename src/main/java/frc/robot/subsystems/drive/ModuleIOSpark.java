@@ -13,8 +13,38 @@
 
 package frc.robot.subsystems.drive;
 
-import static frc.robot.subsystems.drive.DriveConstants.*;
-import static frc.robot.util.SparkUtil.*;
+import static frc.robot.subsystems.drive.DriveConstants.backLeftDriveCanId;
+import static frc.robot.subsystems.drive.DriveConstants.backLeftTurnCanId;
+import static frc.robot.subsystems.drive.DriveConstants.backLeftZeroRotation;
+import static frc.robot.subsystems.drive.DriveConstants.backRightDriveCanId;
+import static frc.robot.subsystems.drive.DriveConstants.backRightTurnCanId;
+import static frc.robot.subsystems.drive.DriveConstants.backRightZeroRotation;
+import static frc.robot.subsystems.drive.DriveConstants.driveEncoderPositionFactor;
+import static frc.robot.subsystems.drive.DriveConstants.driveEncoderVelocityFactor;
+import static frc.robot.subsystems.drive.DriveConstants.driveKd;
+import static frc.robot.subsystems.drive.DriveConstants.driveKp;
+import static frc.robot.subsystems.drive.DriveConstants.driveKs;
+import static frc.robot.subsystems.drive.DriveConstants.driveKv;
+import static frc.robot.subsystems.drive.DriveConstants.driveMotorCurrentLimit;
+import static frc.robot.subsystems.drive.DriveConstants.frontLeftDriveCanId;
+import static frc.robot.subsystems.drive.DriveConstants.frontLeftTurnCanId;
+import static frc.robot.subsystems.drive.DriveConstants.frontLeftZeroRotation;
+import static frc.robot.subsystems.drive.DriveConstants.frontRightDriveCanId;
+import static frc.robot.subsystems.drive.DriveConstants.frontRightTurnCanId;
+import static frc.robot.subsystems.drive.DriveConstants.frontRightZeroRotation;
+import static frc.robot.subsystems.drive.DriveConstants.odometryFrequency;
+import static frc.robot.subsystems.drive.DriveConstants.turnEncoderInverted;
+import static frc.robot.subsystems.drive.DriveConstants.turnEncoderPositionFactor;
+import static frc.robot.subsystems.drive.DriveConstants.turnEncoderVelocityFactor;
+import static frc.robot.subsystems.drive.DriveConstants.turnInverted;
+import static frc.robot.subsystems.drive.DriveConstants.turnKd;
+import static frc.robot.subsystems.drive.DriveConstants.turnKp;
+import static frc.robot.subsystems.drive.DriveConstants.turnMotorCurrentLimit;
+import static frc.robot.subsystems.drive.DriveConstants.turnPIDMaxInput;
+import static frc.robot.subsystems.drive.DriveConstants.turnPIDMinInput;
+import static frc.robot.util.SparkUtil.ifOk;
+import static frc.robot.util.SparkUtil.sparkStickyFault;
+import static frc.robot.util.SparkUtil.tryUntilOk;
 
 import com.revrobotics.AbsoluteEncoder;
 import com.revrobotics.RelativeEncoder;
@@ -43,6 +73,7 @@ import java.util.function.DoubleSupplier;
  * and duty cycle absolute encoder.
  */
 public class ModuleIOSpark implements ModuleIO {
+
   private final Rotation2d zeroRotation;
 
   // Hardware objects
