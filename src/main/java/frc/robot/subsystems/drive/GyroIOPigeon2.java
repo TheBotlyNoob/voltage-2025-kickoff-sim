@@ -13,8 +13,8 @@
 
 package frc.robot.subsystems.drive;
 
-import static frc.robot.subsystems.drive.DriveConstants.odometryFrequency;
-import static frc.robot.subsystems.drive.DriveConstants.pigeonCanId;
+import static frc.robot.constants.SimConstants.DriveConstants.odometryFrequency;
+import static frc.robot.constants.SimConstants.DriveConstants.pigeonCanId;
 
 import com.ctre.phoenix6.BaseStatusSignal;
 import com.ctre.phoenix6.StatusCode;

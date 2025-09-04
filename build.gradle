@@ -1,3 +1,6 @@
+import edu.wpi.first.gradlerio.GradleRIOPlugin
+import groovy.json.JsonSlurper
+
 plugins {
     id "java"
     id "edu.wpi.first.GradleRIO" version "2025.3.2"
@@ -122,13 +125,13 @@ dependencies {
     compileDoc 'org.jetbrains:annotations:23.0.0'
     compileDoc 'ch.randelshofer:fastdoubleparser:2.0.1'
 
-    def akitJson = new groovy.json.JsonSlurper().parseText(new File(projectDir.getAbsolutePath() + "/vendordeps/AdvantageKit.json").text)
+    def akitJson = new JsonSlurper().parseText(new File(projectDir.getAbsolutePath() + "/vendordeps/AdvantageKit.json").text)
     annotationProcessor "org.littletonrobotics.akit:akit-autolog:$akitJson.version"
     doc "org.littletonrobotics.akit:akit-autolog:$akitJson.version"
 }
 
 
-task(replayWatch, type: JavaExec) {
+tasks.register('replayWatch', JavaExec) {
     mainClass = "org.littletonrobotics.junction.ReplayWatch"
     classpath = sourceSets.main.runtimeClasspath
 }
@@ -152,12 +155,12 @@ jar {
         }
     }
     from sourceSets.main.allSource
-    manifest edu.wpi.first.gradlerio.GradleRIOPlugin.javaManifest(ROBOT_MAIN_CLASS)
+    manifest GradleRIOPlugin.javaManifest(ROBOT_MAIN_CLASS)
     duplicatesStrategy = DuplicatesStrategy.INCLUDE
 }
 
 javadoc {
-    destinationDir = file("${buildDir}/docs/javadoc")
+    destinationDir = file("${layout.buildDirectory}/docs/javadoc")
     source {
         files(configurations.docSources.collect { zipTree(it) }, "src/main/java")
     }
@@ -173,12 +176,12 @@ wpi.java.configureExecutableTasks(jar)
 wpi.java.configureTestTasks(test)
 
 // Configure string concat to always inline compile
-tasks.withType(JavaCompile) {
+tasks.withType(JavaCompile).configureEach {
     options.compilerArgs.add '-XDstringConcat=inline'
 }
 
 // Create commit with working changes on event branches
-task(eventDeploy) {
+tasks.register('eventDeploy') {
     doLast {
         if (project.gradle.startParameter.taskNames.any({ it.toLowerCase().contains("deploy") })) {
             def branchPrefix = "event"
@@ -212,15 +215,19 @@ createVersionFile.dependsOn(eventDeploy)
 
 
 project.compileJava.dependsOn(createVersionFile)
+
+def gversionDir = layout.buildDirectory.dir("generated/sources/gversion/java/main")
 // Create version file
 gversion {
-    srcDir = "src/main/java/"
-    classPackage = "frc.robot"
+    srcDir = gversionDir.get()
+    classPackage = "frc.robot.constants"
     className = "BuildConstants"
     dateFormat = "yyyy-MM-dd HH:mm:ss z"
     timeZone = "America/New_York"
     indent = "  "
 }
+sourceSets.main.java.srcDirs += gversionDir.get()
+
 
 // Spotless formatting
 project.compileJava.dependsOn(spotlessApply)

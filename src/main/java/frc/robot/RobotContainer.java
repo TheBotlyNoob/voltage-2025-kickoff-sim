@@ -23,12 +23,12 @@ import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.robot.commands.DriveCommands;
-import frc.robot.subsystems.drive.Drive;
-import frc.robot.subsystems.drive.GyroIO;
-import frc.robot.subsystems.drive.GyroIOPigeon2;
-import frc.robot.subsystems.drive.ModuleIO;
-import frc.robot.subsystems.drive.ModuleIOSim;
-import frc.robot.subsystems.drive.ModuleIOSpark;
+import frc.robot.constants.SimConstants.VisionConstants;
+import frc.robot.subsystems.drive.*;
+import frc.robot.subsystems.vision.Vision;
+import frc.robot.subsystems.vision.VisionIO;
+import frc.robot.subsystems.vision.VisionIOLimelight;
+import frc.robot.subsystems.vision.VisionIOPhotonVisionSim;
 import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
 
 /**
@@ -41,6 +41,7 @@ public class RobotContainer {
 
   // Subsystems
   private final Drive drive;
+  private final Vision vis;
 
   // Controller
   private final CommandXboxController controller = new CommandXboxController(0);
@@ -60,6 +61,8 @@ public class RobotContainer {
                 new ModuleIOSpark(1),
                 new ModuleIOSpark(2),
                 new ModuleIOSpark(3));
+        vis = new Vision(drive::addVisionMeasurement,
+            new VisionIOLimelight("ll", Rotation2d::new));
         break;
 
       case SIM:
@@ -71,6 +74,9 @@ public class RobotContainer {
                 new ModuleIOSim(),
                 new ModuleIOSim(),
                 new ModuleIOSim());
+        vis = new Vision(drive::addVisionMeasurement,
+            new VisionIOPhotonVisionSim("photon",
+                VisionConstants.robotToCamera0, drive::getPose));
         break;
 
       default:
@@ -82,6 +88,7 @@ public class RobotContainer {
                 new ModuleIO() {},
                 new ModuleIO() {},
                 new ModuleIO() {});
+        vis = new Vision(drive::addVisionMeasurement, new VisionIO() {});
         break;
     }
 

@@ -13,7 +13,7 @@
 
 package frc.robot.subsystems.drive;
 
-import static frc.robot.subsystems.drive.DriveConstants.wheelRadiusMeters;
+import static frc.robot.constants.SimConstants.DriveConstants.wheelRadiusMeters;
 
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
@@ -36,17 +36,14 @@ public class Module {
     this.io = io;
     this.index = index;
     driveDisconnectedAlert =
-        new Alert(
-            "Disconnected drive motor on module " + Integer.toString(index) + ".",
-            AlertType.kError);
+        new Alert("Disconnected drive motor on module " + index + ".", AlertType.kError);
     turnDisconnectedAlert =
-        new Alert(
-            "Disconnected turn motor on module " + Integer.toString(index) + ".", AlertType.kError);
+        new Alert("Disconnected turn motor on module " + index + ".", AlertType.kError);
   }
 
   public void periodic() {
     io.updateInputs(inputs);
-    Logger.processInputs("Drive/Module" + Integer.toString(index), inputs);
+    Logger.processInputs("Drive/Module" + index, inputs);
 
     // Calculate positions for odometry
     int sampleCount = inputs.odometryTimestamps.length; // All signals are sampled together

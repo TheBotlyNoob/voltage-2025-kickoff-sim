@@ -13,6 +13,8 @@
 
 package frc.robot.subsystems.drive;
 
+import static frc.robot.constants.SimConstants.DriveConstants.odometryFrequency;
+
 import com.revrobotics.REVLibError;
 import com.revrobotics.spark.SparkBase;
 import edu.wpi.first.wpilibj.Notifier;
@@ -39,7 +41,7 @@ public class SparkOdometryThread {
   private final List<Queue<Double>> timestampQueues = new ArrayList<>();
 
   private static SparkOdometryThread instance = null;
-  private Notifier notifier = new Notifier(this::run);
+  private final Notifier notifier = new Notifier(this::run);
 
   public static SparkOdometryThread getInstance() {
     if (instance == null) {
@@ -53,8 +55,8 @@ public class SparkOdometryThread {
   }
 
   public void start() {
-    if (timestampQueues.size() > 0) {
-      notifier.startPeriodic(1.0 / DriveConstants.odometryFrequency);
+    if (!timestampQueues.isEmpty()) {
+      notifier.startPeriodic(1.0 / odometryFrequency);
     }
   }
 

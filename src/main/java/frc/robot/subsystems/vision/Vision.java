@@ -13,14 +13,7 @@
 
 package frc.robot.subsystems.vision;
 
-import static frc.robot.subsystems.vision.VisionConstants.angularStdDevBaseline;
-import static frc.robot.subsystems.vision.VisionConstants.angularStdDevMegatag2Factor;
-import static frc.robot.subsystems.vision.VisionConstants.aprilTagLayout;
-import static frc.robot.subsystems.vision.VisionConstants.cameraStdDevFactors;
-import static frc.robot.subsystems.vision.VisionConstants.linearStdDevBaseline;
-import static frc.robot.subsystems.vision.VisionConstants.linearStdDevMegatag2Factor;
-import static frc.robot.subsystems.vision.VisionConstants.maxAmbiguity;
-import static frc.robot.subsystems.vision.VisionConstants.maxZError;
+import static frc.robot.constants.SimConstants.VisionConstants.*;
 
 import edu.wpi.first.math.Matrix;
 import edu.wpi.first.math.VecBuilder;
@@ -58,8 +51,7 @@ public class Vision extends SubsystemBase {
     this.disconnectedAlerts = new Alert[io.length];
     for (int i = 0; i < inputs.length; i++) {
       disconnectedAlerts[i] =
-          new Alert(
-              "Vision camera " + Integer.toString(i) + " is disconnected.", AlertType.kWarning);
+          new Alert("Vision camera " + i + " is disconnected.", AlertType.kWarning);
     }
   }
 
@@ -76,7 +68,7 @@ public class Vision extends SubsystemBase {
   public void periodic() {
     for (int i = 0; i < io.length; i++) {
       io[i].updateInputs(inputs[i]);
-      Logger.processInputs("Vision/Camera" + Integer.toString(i), inputs[i]);
+      Logger.processInputs("Vision/Camera" + i, inputs[i]);
     }
 
     // Initialize logging values
@@ -110,9 +102,9 @@ public class Vision extends SubsystemBase {
         boolean rejectPose =
             observation.tagCount() == 0 // Must have at least one tag
                 || (observation.tagCount() == 1
-                && observation.ambiguity() > maxAmbiguity) // Cannot be high ambiguity
+                    && observation.ambiguity() > maxAmbiguity) // Cannot be high ambiguity
                 || Math.abs(observation.pose().getZ())
-                > maxZError // Must have realistic Z coordinate
+                    > maxZError // Must have realistic Z coordinate
 
                 // Must be within the field boundaries
                 || observation.pose().getX() < 0.0
@@ -156,16 +148,16 @@ public class Vision extends SubsystemBase {
 
       // Log camera datadata
       Logger.recordOutput(
-          "Vision/Camera" + Integer.toString(cameraIndex) + "/TagPoses",
+          "Vision/Camera" + cameraIndex + "/TagPoses",
           tagPoses.toArray(new Pose3d[tagPoses.size()]));
       Logger.recordOutput(
-          "Vision/Camera" + Integer.toString(cameraIndex) + "/RobotPoses",
+          "Vision/Camera" + cameraIndex + "/RobotPoses",
           robotPoses.toArray(new Pose3d[robotPoses.size()]));
       Logger.recordOutput(
-          "Vision/Camera" + Integer.toString(cameraIndex) + "/RobotPosesAccepted",
+          "Vision/Camera" + cameraIndex + "/RobotPosesAccepted",
           robotPosesAccepted.toArray(new Pose3d[robotPosesAccepted.size()]));
       Logger.recordOutput(
-          "Vision/Camera" + Integer.toString(cameraIndex) + "/RobotPosesRejected",
+          "Vision/Camera" + cameraIndex + "/RobotPosesRejected",
           robotPosesRejected.toArray(new Pose3d[robotPosesRejected.size()]));
       allTagPoses.addAll(tagPoses);
       allRobotPoses.addAll(robotPoses);
@@ -187,9 +179,9 @@ public class Vision extends SubsystemBase {
   }
 
   @FunctionalInterface
-  public static interface VisionConsumer {
+  public interface VisionConsumer {
 
-    public void accept(
+    void accept(
         Pose2d visionRobotPoseMeters,
         double timestampSeconds,
         Matrix<N3, N1> visionMeasurementStdDevs);
