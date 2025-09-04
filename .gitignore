@@ -1,4 +1,6 @@
 /build
 /.gradle
-/simgui*.json
+simgui*.json
 /src/main/java/frc/robot/BuildConstants.java
+.obsidian
+.idea
