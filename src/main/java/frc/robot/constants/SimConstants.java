@@ -1,6 +1,7 @@
 package frc.robot.constants;
 
 import com.pathplanner.lib.config.ModuleConfig;
+import com.pathplanner.lib.config.PIDConstants;
 import com.pathplanner.lib.config.RobotConfig;
 import edu.wpi.first.apriltag.AprilTagFieldLayout;
 import edu.wpi.first.apriltag.AprilTagFields;
@@ -88,6 +89,10 @@ public class SimConstants {
     public static final double turnSimD = 0.0;
     public static final double turnPIDMinInput = 0; // Radians
     public static final double turnPIDMaxInput = 2 * Math.PI; // Radians
+
+    // Swerve characterization values
+    public static final PIDConstants translationPID = new PIDConstants(5.0, 0.0, 0.0);
+    public static final PIDConstants rotationPID = new PIDConstants(5.0, 0.0, 0.0);
 
     // PathPlanner configuration
     public static final double robotMassKg = 74.088;

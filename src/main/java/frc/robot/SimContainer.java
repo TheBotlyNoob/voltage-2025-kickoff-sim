@@ -14,9 +14,9 @@ import org.littletonrobotics.junction.Logger;
 
 public class SimContainer {
 
-  @Getter private final SwerveDriveSimulation driveSim;
+  @Getter protected final SwerveDriveSimulation driveSim;
 
-  final DriveTrainSimulationConfig driveTrainSimulationConfig =
+  private static final DriveTrainSimulationConfig driveTrainSimulationConfig =
       DriveTrainSimulationConfig.Default()
           // Specify gyro type (for realistic gyro drifting and error simulation)
           .withGyro(COTS.ofPigeon2())
@@ -32,27 +32,27 @@ public class SimContainer {
           // Configures the bumper size (dimensions of the robot bumper)
           .withBumperSize(Inches.of(30), Inches.of(30));
 
+  protected final SimulatedArena arena;
+
   public SimContainer() {
     if (Constants.currentMode != Constants.Mode.SIM) {
       throw new IllegalStateException("SimContainer can only be instantiated in SIM mode");
     }
 
+    arena = new BlankSimArena();
+
     driveSim =
         new SwerveDriveSimulation(driveTrainSimulationConfig, new Pose2d(1, 1, Rotation2d.kZero));
-    arenaInst().addDriveTrainSimulation(driveSim);
-  }
-
-  private SimulatedArena arenaInst() {
-    return SimulatedArena.getInstance();
+    arena.addDriveTrainSimulation(driveSim);
   }
 
   public void simulationInit(ResetOdo resetOdometry) {
-    arenaInst().resetFieldForAuto();
+    arena.resetFieldForAuto();
     resetOdometry.apply(driveSim.getSimulatedDriveTrainPose());
   }
 
   public void simulationPeriodic() {
-    arenaInst().simulationPeriodic();
+    arena.simulationPeriodic();
 
     Logger.recordOutput("FieldSimulation/RobotPosition", driveSim.getSimulatedDriveTrainPose());
     Logger.recordOutput(

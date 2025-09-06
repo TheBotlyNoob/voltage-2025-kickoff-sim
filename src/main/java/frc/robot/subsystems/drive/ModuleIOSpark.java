@@ -123,12 +123,11 @@ public class ModuleIOSpark implements ModuleIO {
         .busVoltagePeriodMs(20)
         .outputCurrentPeriodMs(20);
     tryUntilOk(
-        driveSpark,
         5,
         () ->
             driveSpark.configure(
                 driveConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters));
-    tryUntilOk(driveSpark, 5, () -> driveEncoder.setPosition(0.0));
+    tryUntilOk(5, () -> driveEncoder.setPosition(0.0));
 
     // Configure turn motor
     var turnConfig = new SparkMaxConfig();
@@ -159,7 +158,6 @@ public class ModuleIOSpark implements ModuleIO {
         .busVoltagePeriodMs(20)
         .outputCurrentPeriodMs(20);
     tryUntilOk(
-        turnSpark,
         5,
         () ->
             turnSpark.configure(
