@@ -6,6 +6,7 @@ plugins {
     id "edu.wpi.first.GradleRIO" version "2025.3.2"
     id "com.peterabeles.gversion" version "1.10"
     id "com.diffplug.spotless" version "7.2.1"
+    id "io.freefair.lombok" version "8.14.2"
 }
 
 java {
@@ -160,7 +161,7 @@ jar {
 }
 
 javadoc {
-    destinationDir = file("${layout.buildDirectory}/docs/javadoc")
+    destinationDir = file(layout.buildDirectory.dir("docs/javadoc").get())
     source {
         files(configurations.docSources.collect { zipTree(it) }, "src/main/java")
     }

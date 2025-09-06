@@ -29,6 +29,8 @@ import frc.robot.subsystems.vision.Vision;
 import frc.robot.subsystems.vision.VisionIO;
 import frc.robot.subsystems.vision.VisionIOLimelight;
 import frc.robot.subsystems.vision.VisionIOPhotonVisionSim;
+import org.ironmaple.simulation.drivesims.SwerveDriveSimulation;
+import org.ironmaple.simulation.drivesims.SwerveModuleSimulation;
 import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
 
 /**
@@ -42,6 +44,8 @@ public class RobotContainer {
   // Subsystems
   private final Drive drive;
   private final Vision vis;
+
+  public SimContainer simContainer;
 
   // Controller
   private final CommandXboxController controller = new CommandXboxController(0);
@@ -61,24 +65,32 @@ public class RobotContainer {
                 new ModuleIOSpark(1),
                 new ModuleIOSpark(2),
                 new ModuleIOSpark(3));
-        vis = new Vision(drive::addVisionMeasurement,
-            new VisionIOLimelight("ll", drive::getRotation));
+        vis =
+            new Vision(
+                drive::addVisionMeasurement, new VisionIOLimelight("ll", drive::getRotation));
         break;
 
       case SIM:
+        simContainer = new SimContainer();
+
+        SwerveDriveSimulation driveSim = simContainer.getDriveSim();
+        SwerveModuleSimulation[] mods = driveSim.getModules();
+
         // Sim robot, instantiate physics sim IO implementations
         drive =
             new Drive(
-                new GyroIO() {},
-                new ModuleIOSim(),
-                new ModuleIOSim(),
-                new ModuleIOSim(),
-                new ModuleIOSim());
+                new GyroIOSim(driveSim.getGyroSimulation()),
+                new ModuleIOSim(mods[0]),
+                new ModuleIOSim(mods[1]),
+                new ModuleIOSim(mods[2]),
+                new ModuleIOSim(mods[3]));
         vis =
             new Vision(
                 drive::addVisionMeasurement,
                 new VisionIOPhotonVisionSim(
-                    "photon", VisionConstants.robotToCamera0, drive::getPose));
+                    "photon",
+                    VisionConstants.robotToCamera0,
+                    driveSim::getSimulatedDriveTrainPose));
         break;
 
       default:
@@ -164,5 +176,13 @@ public class RobotContainer {
    */
   public Command getAutonomousCommand() {
     return autoChooser.get();
+  }
+
+  public void simulationInit() {
+    simContainer.simulationInit(drive::setPose);
+  }
+
+  public void simulationPeriodic() {
+    simContainer.simulationPeriodic();
   }
 }
