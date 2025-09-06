@@ -62,7 +62,7 @@ public class RobotContainer {
                 new ModuleIOSpark(2),
                 new ModuleIOSpark(3));
         vis = new Vision(drive::addVisionMeasurement,
-            new VisionIOLimelight("ll", Rotation2d::new));
+            new VisionIOLimelight("ll", drive::getRotation));
         break;
 
       case SIM:
@@ -74,9 +74,11 @@ public class RobotContainer {
                 new ModuleIOSim(),
                 new ModuleIOSim(),
                 new ModuleIOSim());
-        vis = new Vision(drive::addVisionMeasurement,
-            new VisionIOPhotonVisionSim("photon",
-                VisionConstants.robotToCamera0, drive::getPose));
+        vis =
+            new Vision(
+                drive::addVisionMeasurement,
+                new VisionIOPhotonVisionSim(
+                    "photon", VisionConstants.robotToCamera0, drive::getPose));
         break;
 
       default:
