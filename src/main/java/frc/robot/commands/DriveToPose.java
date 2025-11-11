@@ -61,7 +61,8 @@ public class DriveToPose extends Command {
   @Override
   public boolean isFinished() {
     boolean translationDone =
-        dt.getPose().getTranslation().getDistance(goalState.pose.getTranslation()) < tolerance;
+        Math.abs(dt.getPose().getTranslation().getDistance(goalState.pose.getTranslation()))
+            < tolerance;
 
     boolean rotationDone =
         MathUtil.isNear(

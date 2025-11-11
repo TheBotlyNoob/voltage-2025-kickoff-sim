@@ -5,3 +5,5 @@ simgui*.json
 .obsidian
 .idea
 hs_*.log
+.DS_Store
+logs/

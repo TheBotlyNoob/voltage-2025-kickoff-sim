@@ -12,6 +12,7 @@ import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.math.util.Units;
 
+// constants for each subsystem
 public class SimConstants {
 
   public static class DriveConstants {
@@ -51,8 +52,7 @@ public class SimConstants {
     // Drive motor configuration
     public static final int driveMotorCurrentLimit = 50;
     public static final double wheelRadiusMeters = Units.inchesToMeters(1.5);
-    public static final double driveMotorReduction =
-        (45.0 * 22.0) / (14.0 * 15.0); // MAXSwerve with 14 pinion teeth and 22 spur teeth
+    public static final double driveMotorReduction = 6.75;
     public static final DCMotor driveGearbox = DCMotor.getNeoVortex(1);
 
     // Drive encoder configuration
@@ -150,5 +150,42 @@ public class SimConstants {
     public static double linearStdDevMegatag2Factor = 0.5; // More stable than full 3D solve
     public static double angularStdDevMegatag2Factor =
         Double.POSITIVE_INFINITY; // No rotation data available
+  }
+
+  public static class ElevatorConstants {
+
+    public static class PID {
+
+      public static final double kP = 0.0; // not tuned
+      public static final double kI = 0.0; // not tuned
+      public static final double kD = 0.0; // not tuned
+    }
+
+    public static class FF { // not tuned
+
+      public static final double kS = 0.1; // static friction (V)
+      public static final double kG = 0.65; // gravity (V)
+      public static final double kV = 1.6; // volts per velocity (V/(m/s))
+      public static final double kA = 0.0; // volts per acceleration (V/(m/s^2))
+    }
+
+    public static double kCarriageMass = 10.0; // kg
+    public static double kElevatorDrumRadius = Units.inchesToMeters(1.0); // meters
+    public static double kElevatorGearing =
+        10.0; // 10:1 reduction (10 motor rotations -> 1 drum rotation)
+    public static double kMinElevatorHeightMeters = 0.0; // meters
+    public static double kMaxElevatorHeightMeters = 30.0; // meters
+
+    public static double kManualVoltage = 6.0;
+
+    public static int kElevatorLeaderCanId = 10;
+    public static int kElevatorFollowerCanId = 11;
+
+    public static final double kMaxVelocity = 3.5;
+    public static final double kMaxAcceleration = 3.0;
+    public static final double kDecelProp = 0.5;
+
+    public static final int kBottomLimitSwitch = 4;
+    public static final int kTopLimitSwitch = 8;
   }
 }

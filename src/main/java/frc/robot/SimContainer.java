@@ -7,6 +7,7 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.system.plant.DCMotor;
 import lombok.Getter;
 import org.ironmaple.simulation.SimulatedArena;
+import org.ironmaple.simulation.SimulatedArena.Simulatable;
 import org.ironmaple.simulation.drivesims.COTS;
 import org.ironmaple.simulation.drivesims.SwerveDriveSimulation;
 import org.ironmaple.simulation.drivesims.configs.DriveTrainSimulationConfig;
@@ -49,6 +50,10 @@ public class SimContainer {
   public void simulationInit(ResetOdo resetOdometry) {
     arena.resetFieldForAuto();
     resetOdometry.apply(driveSim.getSimulatedDriveTrainPose());
+  }
+
+  public void registerSimulator(Simulatable sim) {
+    arena.addCustomSimulation(sim);
   }
 
   public void simulationPeriodic() {

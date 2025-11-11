@@ -24,11 +24,11 @@ import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.robot.commands.DriveCommands;
 import frc.robot.commands.DriveToPose;
-import frc.robot.constants.SimConstants.VisionConstants;
+import frc.robot.constants.JrConstants.VisionConstants;
 import frc.robot.subsystems.drive.*;
 import frc.robot.subsystems.vision.Vision;
 import frc.robot.subsystems.vision.VisionIO;
-import frc.robot.subsystems.vision.VisionIOLimelight;
+import frc.robot.subsystems.vision.VisionIOPhotonVision;
 import frc.robot.subsystems.vision.VisionIOPhotonVisionSim;
 import org.ironmaple.simulation.drivesims.SwerveDriveSimulation;
 import org.ironmaple.simulation.drivesims.SwerveModuleSimulation;
@@ -45,6 +45,7 @@ public class RobotContainer {
   // Subsystems
   private final Drive drive;
   private final Vision vis;
+  // private Elevator elevator;
 
   public SimContainer simContainer;
 
@@ -54,7 +55,7 @@ public class RobotContainer {
   // Dashboard inputs
   private final LoggedDashboardChooser<Command> autoChooser;
 
-  /** The container for the robot. Contains subsystems, OI devices, and commands. */
+  /** The container for the robot. Contains subsystems, IO devices, and commands. */
   public RobotContainer() {
     switch (Constants.currentMode) {
       case REAL:
@@ -68,7 +69,9 @@ public class RobotContainer {
                 new ModuleIOSpark(3));
         vis =
             new Vision(
-                drive::addVisionMeasurement, new VisionIOLimelight("ll", drive::getRotation));
+                drive::addVisionMeasurement,
+                new VisionIOPhotonVision(
+                    VisionConstants.camera0Name, VisionConstants.robotToCamera0));
         break;
 
       case SIM:
@@ -92,6 +95,10 @@ public class RobotContainer {
                     "photon",
                     VisionConstants.robotToCamera0,
                     driveSim::getSimulatedDriveTrainPose));
+
+        // ElevatorIOSim elevatorSim = new ElevatorIOSim();
+        // simContainer.registerSimulator(elevatorSim);
+        // elevator = new Elevator(elevatorSim);
         break;
 
       default:

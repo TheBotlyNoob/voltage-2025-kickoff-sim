@@ -18,9 +18,12 @@ import com.revrobotics.spark.config.SparkFlexConfig;
 import edu.wpi.first.math.controller.ElevatorFeedforward;
 import edu.wpi.first.math.filter.Debouncer;
 import edu.wpi.first.math.util.Units;
+import edu.wpi.first.wpilibj.DigitalInput;
+import edu.wpi.first.wpilibj2.command.Commands;
+import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.constants.SimConstants.ElevatorConstants;
 
-public class ElevatorIOSpark implements ElevatorIO {
+public class ElevatorIOReal implements ElevatorIO {
 
   private final SparkFlex leader;
   private final RelativeEncoder leaderEncoder;
@@ -29,9 +32,12 @@ public class ElevatorIOSpark implements ElevatorIO {
   private final ElevatorFeedforward feedforward;
   private final SparkClosedLoopController leaderController;
 
+  private final DigitalInput topLimit = new DigitalInput(ElevatorConstants.kBottomLimitSwitch);
+  private final DigitalInput bottomLimit = new DigitalInput(ElevatorConstants.kTopLimitSwitch);
+
   private final Debouncer faultDebounce = new Debouncer(0.5);
 
-  public ElevatorIOSpark() {
+  public ElevatorIOReal() {
     leader = new SparkFlex(ElevatorConstants.kElevatorLeaderCanId, MotorType.kBrushless);
     leaderEncoder = leader.getEncoder();
     leaderController = leader.getClosedLoopController();
@@ -60,6 +66,9 @@ public class ElevatorIOSpark implements ElevatorIO {
         () ->
             leader.configure(
                 leaderConf, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters));
+    if (atBottom()) {
+      setEncoderPosition(0.0);
+    }
 
     SparkBaseConfig followerConf = new SparkFlexConfig();
     followerConf
@@ -76,6 +85,16 @@ public class ElevatorIOSpark implements ElevatorIO {
             ElevatorConstants.FF.kG,
             ElevatorConstants.FF.kV,
             ElevatorConstants.FF.kA);
+
+    new Trigger(topLimit::get).or(bottomLimit::get).onTrue(Commands.runOnce(() -> setVoltage(0.0)));
+  }
+
+  private boolean atBottom() {
+    return !bottomLimit.get();
+  }
+
+  private boolean atTop() {
+    return topLimit.get();
   }
 
   @Override
@@ -96,6 +115,9 @@ public class ElevatorIOSpark implements ElevatorIO {
     ifOk(follower, follower::getOutputCurrent, (curr) -> inputs.followCurrentAmps = curr);
 
     inputs.motorConnected = faultDebounce.calculate(!sparkStickyFault);
+
+    inputs.atBottom = atBottom();
+    inputs.atTop = atTop();
   }
 
   @Override
