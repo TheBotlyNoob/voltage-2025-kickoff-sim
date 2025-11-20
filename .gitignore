@@ -1,4 +1,4 @@
-/build
+build/
 /.gradle
 simgui*.json
 /src/main/java/frc/robot/BuildConstants.java
@@ -7,3 +7,4 @@ simgui*.json
 hs_*.log
 .DS_Store
 logs/
+bin/

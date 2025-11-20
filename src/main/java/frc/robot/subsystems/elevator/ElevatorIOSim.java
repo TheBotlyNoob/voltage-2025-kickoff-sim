@@ -10,7 +10,7 @@ import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.units.measure.Time;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.simulation.ElevatorSim;
-import frc.robot.constants.SimConstants.ElevatorConstants;
+import frc.robot.constants.JrConstants.ElevatorConstants;
 import org.ironmaple.simulation.SimulatedArena;
 import org.ironmaple.simulation.SimulatedArena.Simulatable;
 import org.ironmaple.simulation.motorsims.MapleMotorSim;

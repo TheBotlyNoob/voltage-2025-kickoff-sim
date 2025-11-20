@@ -1,16 +1,3 @@
-// Copyright 2021-2025 FRC 6328
-// http://github.com/Mechanical-Advantage
-//
-// This program is free software; you can redistribute it and/or
-// modify it under the terms of the GNU General Public License
-// version 3 as published by the Free Software Foundation or
-// available in the root directory of this project.
-//
-// This program is distributed in the hope that it will be useful,
-// but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-// GNU General Public License for more details.
-
 package frc.robot;
 
 import com.pathplanner.lib.auto.AutoBuilder;
@@ -24,12 +11,12 @@ import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.robot.commands.DriveCommands;
 import frc.robot.commands.DriveToPose;
-import frc.robot.constants.JrConstants.VisionConstants;
 import frc.robot.subsystems.drive.*;
 import frc.robot.subsystems.vision.Vision;
 import frc.robot.subsystems.vision.VisionIO;
 import frc.robot.subsystems.vision.VisionIOPhotonVision;
 import frc.robot.subsystems.vision.VisionIOPhotonVisionSim;
+import java.util.stream.Stream;
 import org.ironmaple.simulation.drivesims.SwerveDriveSimulation;
 import org.ironmaple.simulation.drivesims.SwerveModuleSimulation;
 import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
@@ -47,7 +34,7 @@ public class RobotContainer {
   private final Vision vis;
   // private Elevator elevator;
 
-  public SimContainer simContainer;
+  public SimContainer sim;
 
   // Controller
   private final CommandXboxController controller = new CommandXboxController(0);
@@ -62,39 +49,48 @@ public class RobotContainer {
         // Real robot, instantiate hardware IO implementations
         drive =
             new Drive(
-                new GyroIOPigeon2(),
-                new ModuleIOSpark(0),
-                new ModuleIOSpark(1),
-                new ModuleIOSpark(2),
-                new ModuleIOSpark(3));
+                Constants.current.drive,
+                (c) -> new GyroIOPigeon2(c),
+                (c) -> new ModuleIOSparkFlex(c, 0),
+                (c) -> new ModuleIOSparkFlex(c, 1),
+                (c) -> new ModuleIOSparkFlex(c, 2),
+                (c) -> new ModuleIOSparkFlex(c, 3));
         vis =
             new Vision(
+                Constants.current.vision,
                 drive::addVisionMeasurement,
-                new VisionIOPhotonVision(
-                    VisionConstants.camera0Name, VisionConstants.robotToCamera0));
+                (c) -> Stream.of(c.cameraConfigs())
+                    .map(cam -> new VisionIOPhotonVision(c, cam))
+                    .toArray(VisionIOPhotonVision[]::new));
         break;
 
       case SIM:
-        simContainer = new SimContainer();
+        sim = new SimContainer();
 
-        SwerveDriveSimulation driveSim = simContainer.getDriveSim();
+        SwerveDriveSimulation driveSim = sim.getDriveSim();
         SwerveModuleSimulation[] mods = driveSim.getModules();
 
         // Sim robot, instantiate physics sim IO implementations
         drive =
             new Drive(
-                new GyroIOSim(driveSim.getGyroSimulation()),
-                new ModuleIOSim(mods[0]),
-                new ModuleIOSim(mods[1]),
-                new ModuleIOSim(mods[2]),
-                new ModuleIOSim(mods[3]));
+                Constants.sim.drive,
+                (c) -> new GyroIOSim(driveSim.getGyroSimulation()),
+                (c) -> new ModuleIOSim(c, mods[0]),
+                (c) -> new ModuleIOSim(c, mods[1]),
+                (c) -> new ModuleIOSim(c, mods[2]),
+                (c) -> new ModuleIOSim(c, mods[3]));
         vis =
             new Vision(
+                Constants.sim.vision,
                 drive::addVisionMeasurement,
-                new VisionIOPhotonVisionSim(
-                    "photon",
-                    VisionConstants.robotToCamera0,
-                    driveSim::getSimulatedDriveTrainPose));
+                (c) -> Stream.of(c.cameraConfigs())
+                    .map(
+                        cam ->
+                            new VisionIOPhotonVisionSim(
+                                c,
+                                cam,
+                                driveSim::getSimulatedDriveTrainPose))
+                    .toArray(VisionIOPhotonVision[]::new));
 
         // ElevatorIOSim elevatorSim = new ElevatorIOSim();
         // simContainer.registerSimulator(elevatorSim);
@@ -105,12 +101,14 @@ public class RobotContainer {
         // Replayed robot, disable IO implementations
         drive =
             new Drive(
-                new GyroIO() {},
-                new ModuleIO() {},
-                new ModuleIO() {},
-                new ModuleIO() {},
-                new ModuleIO() {});
-        vis = new Vision(drive::addVisionMeasurement, new VisionIO() {});
+                Constants.current.drive,
+                (c) -> new GyroIO() {},
+                (c) -> new ModuleIO() {},
+                (c) -> new ModuleIO() {},
+                (c) -> new ModuleIO() {},
+                (c) -> new ModuleIO() {});
+        vis = new Vision(Constants.current.vision, drive::addVisionMeasurement,
+            (c) -> new VisionIO[] {});
         break;
     }
 
@@ -189,10 +187,10 @@ public class RobotContainer {
   }
 
   public void simulationInit() {
-    simContainer.simulationInit(drive::setPose);
+    sim.simulationInit(drive::setPose);
   }
 
   public void simulationPeriodic() {
-    simContainer.simulationPeriodic();
+    sim.simulationPeriodic();
   }
 }

@@ -1,20 +1,6 @@
-// Copyright 2021-2025 FRC 6328
-// http://github.com/Mechanical-Advantage
-//
-// This program is free software; you can redistribute it and/or
-// modify it under the terms of the GNU General Public License
-// version 3 as published by the Free Software Foundation or
-// available in the root directory of this project.
-//
-// This program is distributed in the hope that it will be useful,
-// but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-// GNU General Public License for more details.
-
 package frc.robot.subsystems.vision;
 
-import static frc.robot.constants.SimConstants.VisionConstants.*;
-
+import edu.wpi.first.apriltag.AprilTagFieldLayout;
 import edu.wpi.first.math.Matrix;
 import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.math.geometry.Pose2d;
@@ -26,20 +12,46 @@ import edu.wpi.first.wpilibj.Alert;
 import edu.wpi.first.wpilibj.Alert.AlertType;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.subsystems.vision.VisionIO.PoseObservationType;
+import frc.robot.util.IOFactory;
 import java.util.LinkedList;
 import java.util.List;
 import org.littletonrobotics.junction.Logger;
 
 public class Vision extends SubsystemBase {
 
+  public interface Constants {
+
+    AprilTagFieldLayout aprilTagLayout();
+
+    double maxAmbiguity();
+
+    double maxZError();
+
+    double linearStdDevBaseline();
+
+    double angularStdDevBaseline();
+
+    double linearStdDevMegatag2Factor();
+
+    double angularStdDevMegatag2Factor();
+
+    double[] cameraStdDevFactors();
+
+
+  }
+
+  protected final Constants consts;
+
   private final VisionConsumer consumer;
   private final VisionIO[] io;
   private final VisionIOInputsAutoLogged[] inputs;
   private final Alert[] disconnectedAlerts;
 
-  public Vision(VisionConsumer consumer, VisionIO... io) {
+  public <C extends Constants> Vision(C consts, VisionConsumer consumer,
+      IOFactory<C, VisionIO[]> ioFactory) {
+    this.consts = consts;
     this.consumer = consumer;
-    this.io = io;
+    this.io = ioFactory.create(consts);
 
     // Initialize inputs
     this.inputs = new VisionIOInputsAutoLogged[io.length];
@@ -90,7 +102,7 @@ public class Vision extends SubsystemBase {
 
       // Add tag poses
       for (int tagId : inputs[cameraIndex].tagIds) {
-        var tagPose = aprilTagLayout.getTagPose(tagId);
+        var tagPose = consts.aprilTagLayout().getTagPose(tagId);
         if (tagPose.isPresent()) {
           tagPoses.add(tagPose.get());
         }
@@ -102,15 +114,15 @@ public class Vision extends SubsystemBase {
         boolean rejectPose =
             observation.tagCount() == 0 // Must have at least one tag
                 || (observation.tagCount() == 1
-                    && observation.ambiguity() > maxAmbiguity) // Cannot be high ambiguity
+                && observation.ambiguity() > consts.maxAmbiguity()) // Cannot be high ambiguity
                 || Math.abs(observation.pose().getZ())
-                    > maxZError // Must have realistic Z coordinate
+                > consts.maxZError() // Must have realistic Z coordinate
 
                 // Must be within the field boundaries
                 || observation.pose().getX() < 0.0
-                || observation.pose().getX() > aprilTagLayout.getFieldLength()
+                || observation.pose().getX() > consts.aprilTagLayout().getFieldLength()
                 || observation.pose().getY() < 0.0
-                || observation.pose().getY() > aprilTagLayout.getFieldWidth();
+                || observation.pose().getY() > consts.aprilTagLayout().getFieldWidth();
 
         // Add pose to log
         robotPoses.add(observation.pose());
@@ -128,15 +140,16 @@ public class Vision extends SubsystemBase {
         // Calculate standard deviations
         double stdDevFactor =
             Math.pow(observation.averageTagDistance(), 2.0) / observation.tagCount();
-        double linearStdDev = linearStdDevBaseline * stdDevFactor;
-        double angularStdDev = angularStdDevBaseline * stdDevFactor;
+        double linearStdDev = consts.linearStdDevBaseline() * stdDevFactor;
+        double angularStdDev = consts.angularStdDevBaseline() * stdDevFactor;
         if (observation.type() == PoseObservationType.MEGATAG_2) {
-          linearStdDev *= linearStdDevMegatag2Factor;
-          angularStdDev *= angularStdDevMegatag2Factor;
+          linearStdDev *= consts.linearStdDevMegatag2Factor();
+          angularStdDev *= consts.angularStdDevMegatag2Factor();
         }
-        if (cameraIndex < cameraStdDevFactors.length) {
-          linearStdDev *= cameraStdDevFactors[cameraIndex];
-          angularStdDev *= cameraStdDevFactors[cameraIndex];
+        double[] stdDevFactors = consts.cameraStdDevFactors();
+        if (cameraIndex < stdDevFactors.length) {
+          linearStdDev *= stdDevFactors[cameraIndex];
+          angularStdDev *= stdDevFactors[cameraIndex];
         }
 
         // Send vision observation

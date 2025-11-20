@@ -15,7 +15,8 @@ import org.littletonrobotics.junction.Logger;
 
 public class SimContainer {
 
-  @Getter protected final SwerveDriveSimulation driveSim;
+  @Getter
+  protected final SwerveDriveSimulation driveSim;
 
   private static final DriveTrainSimulationConfig driveTrainSimulationConfig =
       DriveTrainSimulationConfig.Default()
@@ -34,6 +35,7 @@ public class SimContainer {
           .withBumperSize(Inches.of(30), Inches.of(30));
 
   protected final SimulatedArena arena;
+
 
   public SimContainer() {
     if (Constants.currentMode != Constants.Mode.SIM) {

@@ -1,19 +1,4 @@
-// Copyright 2021-2025 FRC 6328
-// http://github.com/Mechanical-Advantage
-//
-// This program is free software; you can redistribute it and/or
-// modify it under the terms of the GNU General Public License
-// version 3 as published by the Free Software Foundation or
-// available in the root directory of this project.
-//
-// This program is distributed in the hope that it will be useful,
-// but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-// GNU General Public License for more details.
-
 package frc.robot.subsystems.drive;
-
-import static frc.robot.constants.SimConstants.DriveConstants.odometryFrequency;
 
 import com.revrobotics.REVLibError;
 import com.revrobotics.spark.SparkBase;
@@ -33,6 +18,8 @@ import java.util.function.DoubleSupplier;
  */
 public class SparkOdometryThread {
 
+  private final double odometryFrequency;
+
   private final List<SparkBase> sparks = new ArrayList<>();
   private final List<DoubleSupplier> sparkSignals = new ArrayList<>();
   private final List<DoubleSupplier> genericSignals = new ArrayList<>();
@@ -43,14 +30,16 @@ public class SparkOdometryThread {
   private static SparkOdometryThread instance = null;
   private final Notifier notifier = new Notifier(this::run);
 
-  public static SparkOdometryThread getInstance() {
+  public static SparkOdometryThread getInstance(double odometryFrequency) {
     if (instance == null) {
-      instance = new SparkOdometryThread();
+      instance = new SparkOdometryThread(odometryFrequency);
     }
     return instance;
   }
 
-  private SparkOdometryThread() {
+  private SparkOdometryThread(double odometryFrequency) {
+    this.odometryFrequency = odometryFrequency;
+
     notifier.setName("OdometryThread");
   }
 
@@ -124,8 +113,8 @@ public class SparkOdometryThread {
         for (int i = 0; i < genericSignals.size(); i++) {
           genericQueues.get(i).offer(genericSignals.get(i).getAsDouble());
         }
-        for (int i = 0; i < timestampQueues.size(); i++) {
-          timestampQueues.get(i).offer(timestamp);
+        for (Queue<Double> timestampQueue : timestampQueues) {
+          timestampQueue.offer(timestamp);
         }
       }
     } finally {

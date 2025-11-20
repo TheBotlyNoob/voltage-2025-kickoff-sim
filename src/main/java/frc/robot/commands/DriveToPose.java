@@ -1,7 +1,7 @@
 package frc.robot.commands;
 
-import static frc.robot.constants.SimConstants.DriveConstants.rotationPID;
-import static frc.robot.constants.SimConstants.DriveConstants.translationPID;
+import static frc.robot.constants.JrConstants.DriveConstants.rotationPID;
+import static frc.robot.constants.JrConstants.DriveConstants.translationPID;
 
 import com.pathplanner.lib.controllers.PPHolonomicDriveController;
 import com.pathplanner.lib.trajectory.PathPlannerTrajectoryState;
