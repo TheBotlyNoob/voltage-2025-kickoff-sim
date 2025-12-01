@@ -17,11 +17,12 @@ public class VisionIOPhotonVisionSim extends VisionIOPhotonVision {
   /**
    * Creates a new VisionIOPhotonVisionSim.
    *
-   * @param name The name of the camera.
+   * @param conf The configuration of the camera.
    * @param poseSupplier Supplier for the robot pose to use in simulation.
    */
   public VisionIOPhotonVisionSim(
-      VisionIOPhotonVision.Constants consts, VisionIOPhotonVision.CameraConfig conf,
+      VisionIOPhotonVision.Constants consts,
+      VisionIOPhotonVision.CameraConfig conf,
       Supplier<Pose2d> poseSupplier) {
     super(consts, conf);
     this.poseSupplier = poseSupplier;

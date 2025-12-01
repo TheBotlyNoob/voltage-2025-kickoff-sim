@@ -57,7 +57,7 @@ public class Drive extends SubsystemBase {
     double odometryFrequency();
   }
 
-  private final Constants consts;
+  public final Constants consts;
 
   static final Lock odometryLock = new ReentrantLock();
   private final GyroIO gyroIO;
@@ -71,15 +71,15 @@ public class Drive extends SubsystemBase {
   private Rotation2d rawGyroRotation = new Rotation2d();
   private final SwerveModulePosition[] lastModulePositions = // For delta tracking
       new SwerveModulePosition[] {
-          new SwerveModulePosition(),
-          new SwerveModulePosition(),
-          new SwerveModulePosition(),
-          new SwerveModulePosition()
+        new SwerveModulePosition(),
+        new SwerveModulePosition(),
+        new SwerveModulePosition(),
+        new SwerveModulePosition()
       };
   private final SwerveDrivePoseEstimator poseEstimator;
 
-
-  public <C extends Constants> Drive(C consts,
+  public <C extends Constants & Module.Constants> Drive(
+      C consts,
       IOFactory<C, GyroIO> gyroIO,
       IOFactory<C, ModuleIO> flModuleIO,
       IOFactory<C, ModuleIO> frModuleIO,
@@ -87,14 +87,15 @@ public class Drive extends SubsystemBase {
       IOFactory<C, ModuleIO> brModuleIO) {
     this.consts = consts;
     this.gyroIO = gyroIO.create(consts);
-    modules[0] = new Module(flModuleIO.create(consts), 0);
-    modules[1] = new Module(frModuleIO.create(consts), 1);
-    modules[2] = new Module(blModuleIO.create(consts), 2);
-    modules[3] = new Module(brModuleIO.create(consts), 3);
+    modules[0] = new Module(consts, flModuleIO.create(consts), 0);
+    modules[1] = new Module(consts, frModuleIO.create(consts), 1);
+    modules[2] = new Module(consts, blModuleIO.create(consts), 2);
+    modules[3] = new Module(consts, brModuleIO.create(consts), 3);
 
     kinematics = new SwerveDriveKinematics(consts.moduleTranslations().toArray());
-    poseEstimator = new SwerveDrivePoseEstimator(kinematics, rawGyroRotation, lastModulePositions,
-        new Pose2d());
+    poseEstimator =
+        new SwerveDrivePoseEstimator(
+            kinematics, rawGyroRotation, lastModulePositions, new Pose2d());
 
     // Usage reporting for swerve template
     HAL.report(tResourceType.kResourceType_RobotDrive, tInstances.kRobotDriveSwerve_AdvantageKit);
@@ -115,8 +116,7 @@ public class Drive extends SubsystemBase {
     Pathfinding.setPathfinder(new LocalADStarAK());
     PathPlannerLogging.setLogActivePathCallback(
         (activePath) -> {
-          Logger.recordOutput(
-              "Odometry/Trajectory", activePath.toArray(new Pose2d[activePath.size()]));
+          Logger.recordOutput("Odometry/Trajectory", activePath.toArray(new Pose2d[0]));
         });
     PathPlannerLogging.setLogTargetPoseCallback(
         (targetPose) -> {

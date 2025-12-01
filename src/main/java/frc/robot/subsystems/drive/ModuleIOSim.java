@@ -19,7 +19,6 @@ public class ModuleIOSim implements ModuleIO {
 
     int turnCurrentLimit();
 
-
     double driveKp();
 
     double driveKd();
@@ -27,7 +26,6 @@ public class ModuleIOSim implements ModuleIO {
     double driveKs();
 
     double driveKv();
-
 
     double turnKp();
 
@@ -58,10 +56,14 @@ public class ModuleIOSim implements ModuleIO {
 
     // configures a generic motor controller for drive motor
     // set a current limit of 60 amps
-    this.driveMotor = moduleSim.useGenericMotorControllerForDrive()
-        .withCurrentLimit(Amps.of(consts.driveCurrentLimit()));
-    this.turnMotor = moduleSim.useGenericControllerForSteer()
-        .withCurrentLimit(Amps.of(consts.turnCurrentLimit()));
+    this.driveMotor =
+        moduleSim
+            .useGenericMotorControllerForDrive()
+            .withCurrentLimit(Amps.of(consts.driveCurrentLimit()));
+    this.turnMotor =
+        moduleSim
+            .useGenericControllerForSteer()
+            .withCurrentLimit(Amps.of(consts.turnCurrentLimit()));
 
     // Enable wrapping for turn PID
     turnController.enableContinuousInput(-Math.PI, Math.PI);

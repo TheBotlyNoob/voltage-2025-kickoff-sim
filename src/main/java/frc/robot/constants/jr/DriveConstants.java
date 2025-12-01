@@ -7,13 +7,14 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.math.util.Units;
-import frc.robot.subsystems.drive.Drive;
-import frc.robot.subsystems.drive.GyroIOPigeon2;
-import frc.robot.subsystems.drive.ModuleBundle;
-import frc.robot.subsystems.drive.ModuleIOSparkFlex;
+import frc.robot.subsystems.drive.*;
+import frc.robot.subsystems.drive.Module;
 
-public class DriveConstants implements Drive.Constants, GyroIOPigeon2.Constants,
-    ModuleIOSparkFlex.Constants {
+public class DriveConstants
+    implements Drive.Constants,
+        Module.Constants,
+        GyroIOPigeon2.Constants,
+        ModuleIOSparkFlex.Constants {
 
   @Override
   public int pigeonCanId() {
@@ -23,10 +24,7 @@ public class DriveConstants implements Drive.Constants, GyroIOPigeon2.Constants,
   @Override
   public ModuleBundle<Rotation2d> zeroRotations() {
     return new ModuleBundle<>(
-        new Rotation2d(0),
-        new Rotation2d(0),
-        new Rotation2d(0),
-        new Rotation2d(0));
+        new Rotation2d(0), new Rotation2d(0), new Rotation2d(0), new Rotation2d(0));
   }
 
   @Override
@@ -79,7 +77,6 @@ public class DriveConstants implements Drive.Constants, GyroIOPigeon2.Constants,
   public double driveEncoderPositionFactor() {
     return 2 * Math.PI / driveMotorReduction;
   }
-
 
   // Rotor RPM -> Wheel Rad/Sec
   @Override
@@ -140,8 +137,7 @@ public class DriveConstants implements Drive.Constants, GyroIOPigeon2.Constants,
         new Translation2d(trackWidth / 2.0, wheelBase / 2.0),
         new Translation2d(trackWidth / 2.0, -wheelBase / 2.0),
         new Translation2d(-trackWidth / 2.0, wheelBase / 2.0),
-        new Translation2d(-trackWidth / 2.0, -wheelBase / 2.0)
-    );
+        new Translation2d(-trackWidth / 2.0, -wheelBase / 2.0));
   }
 
   @Override
@@ -165,18 +161,17 @@ public class DriveConstants implements Drive.Constants, GyroIOPigeon2.Constants,
 
   @Override
   public RobotConfig ppRobotConfig() {
-    return
-        new RobotConfig(
-            robotMassKg,
-            robotMOI,
-            new ModuleConfig(
-                wheelRadiusMeters,
-                maxSpeed(),
-                wheelCOF,
-                driveGearbox.withReduction(driveMotorReduction),
-                driveCurrentLimit(),
-                1),
-            moduleTranslations().toArray());
+    return new RobotConfig(
+        robotMassKg,
+        robotMOI,
+        new ModuleConfig(
+            wheelRadiusMeters,
+            maxSpeed(),
+            wheelCOF,
+            driveGearbox.withReduction(driveMotorReduction),
+            driveCurrentLimit(),
+            1),
+        moduleTranslations().toArray());
   }
 
   // Meters/Sec
@@ -187,5 +182,10 @@ public class DriveConstants implements Drive.Constants, GyroIOPigeon2.Constants,
   @Override
   public double odometryFrequency() {
     return 100.0;
+  }
+
+  @Override
+  public double wheelRadiusMeters() {
+    return Units.inchesToMeters(4);
   }
 }

@@ -1,8 +1,5 @@
 package frc.robot.commands;
 
-import static frc.robot.constants.JrConstants.DriveConstants.rotationPID;
-import static frc.robot.constants.JrConstants.DriveConstants.translationPID;
-
 import com.pathplanner.lib.controllers.PPHolonomicDriveController;
 import com.pathplanner.lib.trajectory.PathPlannerTrajectoryState;
 import edu.wpi.first.math.MathUtil;
@@ -18,8 +15,7 @@ public class DriveToPose extends Command {
 
   private final double tolerance = 0.1;
 
-  private final PPHolonomicDriveController pid =
-      new PPHolonomicDriveController(translationPID, rotationPID);
+  private final PPHolonomicDriveController pid;
 
   /**
    * Command to drive to a specific pose. Without a specified target speed, the command will end
@@ -36,6 +32,8 @@ public class DriveToPose extends Command {
     goalState = new PathPlannerTrajectoryState();
     goalState.pose = goalPose;
 
+    pid = new PPHolonomicDriveController(dt.consts.translationPID(), dt.consts.rotationPID());
+
     addRequirements(dt);
   }
 
@@ -48,6 +46,8 @@ public class DriveToPose extends Command {
   public DriveToPose(Drive drivetrain, PathPlannerTrajectoryState goalState) {
     dt = drivetrain;
     this.goalState = goalState;
+
+    pid = new PPHolonomicDriveController(dt.consts.translationPID(), dt.consts.rotationPID());
 
     addRequirements(dt);
   }

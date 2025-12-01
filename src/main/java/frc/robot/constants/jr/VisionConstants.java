@@ -28,12 +28,9 @@ public class VisionConstants implements Vision.Constants, VisionIOPhotonVision.C
   public CameraConfig[] cameraConfigs() {
     CameraConfig camera0 = new CameraConfig();
     camera0.cameraName = "camera_0";
-    camera0.robotToCamera =
-        new Transform3d(0.2, 0.0, 0.2, new Rotation3d(0.0, -0.4, 0.0));
+    camera0.robotToCamera = new Transform3d(0.2, 0.0, 0.2, new Rotation3d(0.0, -0.4, 0.0));
 
-    return new CameraConfig[] {
-        camera0
-    };
+    return new CameraConfig[] {camera0};
   }
 
   @Override
@@ -61,5 +58,4 @@ public class VisionConstants implements Vision.Constants, VisionIOPhotonVision.C
   public double angularStdDevMegatag2Factor() {
     return Double.POSITIVE_INFINITY;
   }
-
 }

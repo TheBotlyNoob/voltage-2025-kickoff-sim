@@ -44,13 +44,14 @@ public class RobotContainer {
 
   /** The container for the robot. Contains subsystems, IO devices, and commands. */
   public RobotContainer() {
+
     switch (Constants.currentMode) {
       case REAL:
         // Real robot, instantiate hardware IO implementations
         drive =
             new Drive(
                 Constants.current.drive,
-                (c) -> new GyroIOPigeon2(c),
+                GyroIOPigeon2::new,
                 (c) -> new ModuleIOSparkFlex(c, 0),
                 (c) -> new ModuleIOSparkFlex(c, 1),
                 (c) -> new ModuleIOSparkFlex(c, 2),
@@ -59,9 +60,10 @@ public class RobotContainer {
             new Vision(
                 Constants.current.vision,
                 drive::addVisionMeasurement,
-                (c) -> Stream.of(c.cameraConfigs())
-                    .map(cam -> new VisionIOPhotonVision(c, cam))
-                    .toArray(VisionIOPhotonVision[]::new));
+                (c) ->
+                    Stream.of(c.cameraConfigs())
+                        .map(cam -> new VisionIOPhotonVision(c, cam))
+                        .toArray(VisionIOPhotonVision[]::new));
         break;
 
       case SIM:
@@ -83,14 +85,13 @@ public class RobotContainer {
             new Vision(
                 Constants.sim.vision,
                 drive::addVisionMeasurement,
-                (c) -> Stream.of(c.cameraConfigs())
-                    .map(
-                        cam ->
-                            new VisionIOPhotonVisionSim(
-                                c,
-                                cam,
-                                driveSim::getSimulatedDriveTrainPose))
-                    .toArray(VisionIOPhotonVision[]::new));
+                (c) ->
+                    Stream.of(c.cameraConfigs())
+                        .map(
+                            cam ->
+                                new VisionIOPhotonVisionSim(
+                                    c, cam, driveSim::getSimulatedDriveTrainPose))
+                        .toArray(VisionIOPhotonVision[]::new));
 
         // ElevatorIOSim elevatorSim = new ElevatorIOSim();
         // simContainer.registerSimulator(elevatorSim);
@@ -107,8 +108,9 @@ public class RobotContainer {
                 (c) -> new ModuleIO() {},
                 (c) -> new ModuleIO() {},
                 (c) -> new ModuleIO() {});
-        vis = new Vision(Constants.current.vision, drive::addVisionMeasurement,
-            (c) -> new VisionIO[] {});
+        vis =
+            new Vision(
+                Constants.current.vision, drive::addVisionMeasurement, (c) -> new VisionIO[] {});
         break;
     }
 

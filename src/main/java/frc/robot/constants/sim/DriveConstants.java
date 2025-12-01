@@ -5,12 +5,13 @@ import com.pathplanner.lib.config.RobotConfig;
 import edu.wpi.first.math.geometry.Translation2d;
 import frc.robot.Constants;
 import frc.robot.subsystems.drive.Drive;
+import frc.robot.subsystems.drive.Module;
 import frc.robot.subsystems.drive.ModuleBundle;
 import frc.robot.subsystems.drive.ModuleIOSim;
 
 // ideally all of these constants are the same as their real counterparts,
 // but they can be changed if needed
-public class DriveConstants implements Drive.Constants, ModuleIOSim.Constants {
+public class DriveConstants implements Drive.Constants, Module.Constants, ModuleIOSim.Constants {
 
   @Override
   public int driveCurrentLimit() {
@@ -63,6 +64,11 @@ public class DriveConstants implements Drive.Constants, ModuleIOSim.Constants {
   }
 
   @Override
+  public double maxSpeed() {
+    return Constants.current.drive.maxSpeed();
+  }
+
+  @Override
   public PIDConstants translationPID() {
     return Constants.current.drive.translationPID();
   }
@@ -80,5 +86,10 @@ public class DriveConstants implements Drive.Constants, ModuleIOSim.Constants {
   @Override
   public double odometryFrequency() {
     return 100.0;
+  }
+
+  @Override
+  public double wheelRadiusMeters() {
+    return Constants.current.drive.wheelRadiusMeters();
   }
 }

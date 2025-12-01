@@ -34,11 +34,9 @@ public class ModuleIOSparkFlex implements ModuleIO {
 
     ModuleBundle<Integer> turnCanIds();
 
-
     int driveCurrentLimit();
 
     int turnCurrentLimit();
-
 
     double driveKp();
 
@@ -51,7 +49,6 @@ public class ModuleIOSparkFlex implements ModuleIO {
     double driveEncoderPositionFactor();
 
     double driveEncoderVelocityFactor();
-
 
     double turnKp();
 
@@ -68,7 +65,6 @@ public class ModuleIOSparkFlex implements ModuleIO {
     boolean turnInverted();
 
     boolean turnEncoderInverted();
-
 
     double odometryFrequency();
   }
@@ -101,29 +97,29 @@ public class ModuleIOSparkFlex implements ModuleIO {
 
     zeroRotation =
         switch (module) {
-          case 0 -> consts.zeroRotations().frontLeft;
-          case 1 -> consts.zeroRotations().frontRight;
-          case 2 -> consts.zeroRotations().backLeft;
-          case 3 -> consts.zeroRotations().backRight;
+          case 0 -> consts.zeroRotations().frontLeft();
+          case 1 -> consts.zeroRotations().frontRight();
+          case 2 -> consts.zeroRotations().backLeft();
+          case 3 -> consts.zeroRotations().backRight();
           default -> new Rotation2d();
         };
     driveSpark =
         new SparkFlex(
             switch (module) {
-              case 0 -> consts.driveCanIds().frontLeft;
-              case 1 -> consts.driveCanIds().frontRight;
-              case 2 -> consts.driveCanIds().backLeft;
-              case 3 -> consts.driveCanIds().backRight;
+              case 0 -> consts.driveCanIds().frontLeft();
+              case 1 -> consts.driveCanIds().frontRight();
+              case 2 -> consts.driveCanIds().backLeft();
+              case 3 -> consts.driveCanIds().backRight();
               default -> 0;
             },
             MotorType.kBrushless);
     turnSpark =
         new SparkMax(
             switch (module) {
-              case 0 -> consts.turnCanIds().frontLeft;
-              case 1 -> consts.turnCanIds().frontRight;
-              case 2 -> consts.turnCanIds().backLeft;
-              case 3 -> consts.turnCanIds().backRight;
+              case 0 -> consts.turnCanIds().frontLeft();
+              case 1 -> consts.turnCanIds().frontRight();
+              case 2 -> consts.turnCanIds().backLeft();
+              case 3 -> consts.turnCanIds().backRight();
               default -> 0;
             },
             MotorType.kBrushless);
@@ -201,13 +197,11 @@ public class ModuleIOSparkFlex implements ModuleIO {
                 turnConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters));
 
     // Create odometry queues
-    SparkOdometryThread odometryThread = SparkOdometryThread.getInstance(
-        consts.odometryFrequency());
+    SparkOdometryThread odometryThread =
+        SparkOdometryThread.getInstance(consts.odometryFrequency());
     timestampQueue = odometryThread.makeTimestampQueue();
-    drivePositionQueue =
-        odometryThread.registerSignal(driveSpark, driveEncoder::getPosition);
-    turnPositionQueue =
-        odometryThread.registerSignal(turnSpark, turnEncoder::getPosition);
+    drivePositionQueue = odometryThread.registerSignal(driveSpark, driveEncoder::getPosition);
+    turnPositionQueue = odometryThread.registerSignal(turnSpark, turnEncoder::getPosition);
   }
 
   @Override
@@ -277,7 +271,8 @@ public class ModuleIOSparkFlex implements ModuleIO {
   public void setTurnPosition(Rotation2d rotation) {
     double setpoint =
         MathUtil.inputModulus(
-            rotation.plus(zeroRotation).getRadians(), consts.turnPIDMinInput(),
+            rotation.plus(zeroRotation).getRadians(),
+            consts.turnPIDMinInput(),
             consts.turnPIDMaxInput());
     turnController.setReference(setpoint, ControlType.kPosition);
   }

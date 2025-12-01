@@ -26,7 +26,8 @@ public final class Constants {
   /**
    * The current set of constants for the REAL mode. w
    */
-  public static final frc.robot.constants.jr.Constants current = new frc.robot.constants.jr.Constants();
+  public static final frc.robot.constants.jr.Constants current =
+      new frc.robot.constants.jr.Constants();
 
   /**
    * The current set of constants for the SIM mode.
