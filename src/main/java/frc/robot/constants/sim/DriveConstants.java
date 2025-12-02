@@ -6,7 +6,6 @@ import edu.wpi.first.math.geometry.Translation2d;
 import frc.robot.Constants;
 import frc.robot.subsystems.drive.Drive;
 import frc.robot.subsystems.drive.Module;
-import frc.robot.subsystems.drive.ModuleBundle;
 import frc.robot.subsystems.drive.ModuleIOSim;
 
 // ideally all of these constants are the same as their real counterparts,
@@ -54,7 +53,7 @@ public class DriveConstants implements Drive.Constants, Module.Constants, Module
   }
 
   @Override
-  public ModuleBundle<Translation2d> moduleTranslations() {
+  public Translation2d[] moduleTranslations() {
     return Constants.current.drive.moduleTranslations();
   }
 

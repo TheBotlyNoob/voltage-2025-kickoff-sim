@@ -42,7 +42,7 @@ public class Drive extends SubsystemBase {
 
   public interface Constants {
 
-    ModuleBundle<Translation2d> moduleTranslations();
+    Translation2d[] moduleTranslations();
 
     double driveBaseRadius();
 
@@ -92,7 +92,7 @@ public class Drive extends SubsystemBase {
     modules[2] = new Module(consts, blModuleIO.create(consts), 2);
     modules[3] = new Module(consts, brModuleIO.create(consts), 3);
 
-    kinematics = new SwerveDriveKinematics(consts.moduleTranslations().toArray());
+    kinematics = new SwerveDriveKinematics(consts.moduleTranslations());
     poseEstimator =
         new SwerveDrivePoseEstimator(
             kinematics, rawGyroRotation, lastModulePositions, new Pose2d());
@@ -235,7 +235,7 @@ public class Drive extends SubsystemBase {
    * return to their normal orientations the next time a nonzero velocity is requested.
    */
   public void stopWithX() {
-    Translation2d[] moduleTranslations = consts.moduleTranslations().toArray();
+    Translation2d[] moduleTranslations = consts.moduleTranslations();
 
     Rotation2d[] headings = new Rotation2d[4];
     for (int i = 0; i < 4; i++) {

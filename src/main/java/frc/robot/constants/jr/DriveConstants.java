@@ -7,8 +7,10 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.math.util.Units;
-import frc.robot.subsystems.drive.*;
+import frc.robot.subsystems.drive.Drive;
+import frc.robot.subsystems.drive.GyroIOPigeon2;
 import frc.robot.subsystems.drive.Module;
+import frc.robot.subsystems.drive.ModuleIOSparkFlex;
 
 public class DriveConstants
     implements Drive.Constants,
@@ -22,19 +24,20 @@ public class DriveConstants
   }
 
   @Override
-  public ModuleBundle<Rotation2d> zeroRotations() {
-    return new ModuleBundle<>(
-        new Rotation2d(0), new Rotation2d(0), new Rotation2d(0), new Rotation2d(0));
+  public Rotation2d[] zeroRotations() {
+    return new Rotation2d[] {
+      new Rotation2d(0), new Rotation2d(0), new Rotation2d(0), new Rotation2d(0)
+    };
   }
 
   @Override
-  public ModuleBundle<Integer> driveCanIds() {
-    return new ModuleBundle<>(6, 7, 52, 2);
+  public int[] driveCanIds() {
+    return new int[] {6, 7, 52, 2};
   }
 
   @Override
-  public ModuleBundle<Integer> turnCanIds() {
-    return new ModuleBundle<>(5, 4, 8, 3);
+  public int[] turnCanIds() {
+    return new int[] {5, 4, 8, 3};
   }
 
   @Override
@@ -132,12 +135,13 @@ public class DriveConstants
   public static final double wheelBase = Units.inchesToMeters(24.75);
 
   @Override
-  public ModuleBundle<Translation2d> moduleTranslations() {
-    return new ModuleBundle<>(
-        new Translation2d(trackWidth / 2.0, wheelBase / 2.0),
-        new Translation2d(trackWidth / 2.0, -wheelBase / 2.0),
-        new Translation2d(-trackWidth / 2.0, wheelBase / 2.0),
-        new Translation2d(-trackWidth / 2.0, -wheelBase / 2.0));
+  public Translation2d[] moduleTranslations() {
+    return new Translation2d[] {
+      new Translation2d(trackWidth / 2.0, wheelBase / 2.0),
+      new Translation2d(trackWidth / 2.0, -wheelBase / 2.0),
+      new Translation2d(-trackWidth / 2.0, wheelBase / 2.0),
+      new Translation2d(-trackWidth / 2.0, -wheelBase / 2.0)
+    };
   }
 
   @Override
@@ -171,7 +175,7 @@ public class DriveConstants
             driveGearbox.withReduction(driveMotorReduction),
             driveCurrentLimit(),
             1),
-        moduleTranslations().toArray());
+        moduleTranslations());
   }
 
   // Meters/Sec

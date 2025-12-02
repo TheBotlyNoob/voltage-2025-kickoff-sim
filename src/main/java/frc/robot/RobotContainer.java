@@ -133,7 +133,7 @@ public class RobotContainer {
     autoChooser.addOption(
         "Drive SysId (Dynamic Reverse)", drive.sysIdDynamic(SysIdRoutine.Direction.kReverse));
     autoChooser.addOption(
-        "Drive to Pose", new DriveToPose(drive, new Pose2d(6, 4, Rotation2d.fromDegrees(360))));
+        "Drive to Pose", new DriveToPose(drive, new Pose2d(8, 2, Rotation2d.fromDegrees(360))));
 
     // Configure the button bindings
     configureButtonBindings();
