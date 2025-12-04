@@ -4,8 +4,12 @@ import com.pathplanner.lib.controllers.PPHolonomicDriveController;
 import com.pathplanner.lib.trajectory.PathPlannerTrajectoryState;
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Transform2d;
+import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.wpilibj2.command.Command;
+import frc.robot.Constants;
 import frc.robot.subsystems.drive.Drive;
 
 public class DriveToPose extends Command {
@@ -52,12 +56,24 @@ public class DriveToPose extends Command {
     addRequirements(dt);
   }
 
+  public static Pose2d tagPose(int tagId, Transform2d tagOffset) {
+    Pose2d tagPose =
+        Constants.current.vision.aprilTagLayout().getTagPose(tagId).orElseThrow().toPose2d();
+    return new Pose2d(
+        tagPose
+            .getTranslation()
+            .plus(
+                new Translation2d(tagPose.getRotation().getCos(), tagPose.getRotation().getSin())
+                    .times(.4)
+                    .plus(tagOffset.getTranslation().rotateBy(tagPose.getRotation()))),
+        tagPose.getRotation().rotateBy(Rotation2d.k180deg).rotateBy(tagOffset.getRotation()));
+  }
+
   @Override
   public void execute() {
     dt.runVelocity(pid.calculateRobotRelativeSpeeds(dt.getPose(), goalState));
   }
 
-  // TODO: figure out why it never finishes.
   @Override
   public boolean isFinished() {
     boolean translationDone =

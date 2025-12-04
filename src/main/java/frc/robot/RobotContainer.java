@@ -1,12 +1,19 @@
 package frc.robot;
 
 import com.pathplanner.lib.auto.AutoBuilder;
+import com.pathplanner.lib.path.GoalEndState;
+import com.pathplanner.lib.path.PathConstraints;
+import com.pathplanner.lib.path.PathPlannerPath;
+import com.pathplanner.lib.path.Waypoint;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Transform2d;
+import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
+import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.robot.commands.DriveCommands;
@@ -16,6 +23,7 @@ import frc.robot.subsystems.vision.Vision;
 import frc.robot.subsystems.vision.VisionIO;
 import frc.robot.subsystems.vision.VisionIOPhotonVision;
 import frc.robot.subsystems.vision.VisionIOPhotonVisionSim;
+import java.util.List;
 import java.util.stream.Stream;
 import org.ironmaple.simulation.drivesims.SwerveDriveSimulation;
 import org.ironmaple.simulation.drivesims.SwerveModuleSimulation;
@@ -115,7 +123,8 @@ public class RobotContainer {
     }
 
     // Set up auto routines
-    autoChooser = new LoggedDashboardChooser<>("Auto Choices", AutoBuilder.buildAutoChooser());
+    autoChooser = new LoggedDashboardChooser<>("Auto Choices");
+    autoChooser.addDefaultOption("Nothing", Commands.none());
 
     // Set up SysId routines
     autoChooser.addOption(
@@ -132,8 +141,48 @@ public class RobotContainer {
         "Drive SysId (Dynamic Forward)", drive.sysIdDynamic(SysIdRoutine.Direction.kForward));
     autoChooser.addOption(
         "Drive SysId (Dynamic Reverse)", drive.sysIdDynamic(SysIdRoutine.Direction.kReverse));
+
+    // TODO: extract this into a constant
+    Transform2d robotScoreOffsetRight = new Transform2d(0, 0.1, Rotation2d.fromDegrees(0));
+    Transform2d robotScoreOffsetLeft = new Transform2d(0, -0.1, Rotation2d.fromDegrees(0));
+
+    Pose2d reefEscape = DriveToPose.tagPose(11, new Transform2d(1, 0, Rotation2d.kCW_90deg));
+    Pose2d playerStation =
+        DriveToPose.tagPose(1, new Transform2d(Translation2d.kZero, Rotation2d.k180deg));
+
+    List<Waypoint> waypoints =
+        PathPlannerPath.waypointsFromPoses(
+            reefEscape, new Pose2d(playerStation.getTranslation(), Rotation2d.kZero));
+
+    // PathConstraints constraints = new PathConstraints(3.0, 3.0, 2 * Math.PI, 4 * Math.PI); // The
+    // constraints for this path.
+    PathConstraints constraints =
+        PathConstraints.unlimitedConstraints(
+            12.0); // You can also use unlimited constraints, only limited by motor torque and
+    // nominal battery voltage
+
+    // Create the path using the waypoints created above
+    PathPlannerPath path =
+        new PathPlannerPath(
+            waypoints,
+            constraints,
+            null,
+            // The ideal starting state, this is only relevant for pre-planned paths, so can be null
+            // for on-the-fly paths.
+            new GoalEndState(0.0, playerStation.getRotation())
+            // Goal end state. You can set a holonomic rotation here. If using a differential
+            // drivetrain, the rotation will have no effect.
+            );
+
+    // Prevent the path from being flipped if the coordinates are already correct
+    path.preventFlipping = true;
     autoChooser.addOption(
-        "Drive to Pose", new DriveToPose(drive, new Pose2d(8, 2, Rotation2d.fromDegrees(360))));
+        "11L to CS to 6R",
+        new SequentialCommandGroup(
+            new DriveToPose(drive, DriveToPose.tagPose(11, robotScoreOffsetLeft)),
+            AutoBuilder.followPath(path),
+            Commands.waitSeconds(3),
+            new DriveToPose(drive, DriveToPose.tagPose(6, robotScoreOffsetRight))));
 
     // Configure the button bindings
     configureButtonBindings();
